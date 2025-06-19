@@ -1,4 +1,3 @@
-
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,78 +6,83 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class PasswordManager {
-    private static final String ALGORITHM = "AES";
-    private static final byte[] keyValue = new byte[] { 'T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y' };
-    private Map<String, String> passwordStore = new HashMap<>();
+    private static final String CIPHER_ALGORITHM = "AES";
+    private static final byte[] AES_KEY = new byte[] { 'M', 'y', 'S', 'e', 'c', 'u', 'r', 'e', 'K', 'e', 'y', '9', '8', '7', '6', '5' };
+    private Map<String, String> vault = new HashMap<>();
 
     public static void main(String[] args) {
-        PasswordManager manager = new PasswordManager();
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("1. Add Password");
-            System.out.println("2. Retrieve Password");
-            System.out.println("3. Exit");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+        PasswordManager pm = new PasswordManager();
+        Scanner sc = new Scanner(System.in);
 
-            switch (choice) {
+        while (true) {
+            System.out.println("\n==== Password Manager ====");
+            System.out.println("1. Save a Password");
+            System.out.println("2. View a Password");
+            System.out.println("3. Exit");
+            System.out.print("Enter choice: ");
+            int option = sc.nextInt();
+            sc.nextLine(); // clear newline
+
+            switch (option) {
                 case 1:
-                    System.out.print("Enter site: ");
-                    String site = scanner.nextLine();
-                    System.out.print("Enter password: ");
-                    String password = scanner.nextLine();
-                    manager.addPassword(site, password);
+                    System.out.print("Enter the service/site name: ");
+                    String service = sc.nextLine();
+                    System.out.print("Enter the password: ");
+                    String pwd = sc.nextLine();
+                    pm.savePassword(service, pwd);
                     break;
                 case 2:
-                    System.out.print("Enter site: ");
-                    site = scanner.nextLine();
-                    String retrievedPassword = manager.getPassword(site);
-                    System.out.println("Password: " + retrievedPassword);
+                    System.out.print("Enter the service/site name: ");
+                    service = sc.nextLine();
+                    String result = pm.fetchPassword(service);
+                    System.out.println("Stored Password: " + result);
                     break;
                 case 3:
+                    System.out.println("Thank you for using Password Manager!");
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Invalid choice. Try again.");
+                    System.out.println("Invalid input. Please try again.");
             }
         }
     }
 
-    public void addPassword(String site, String password) {
+    public void savePassword(String site, String password) {
         try {
-            String encryptedPassword = encrypt(password);
-            passwordStore.put(site, encryptedPassword);
-            System.out.println("Password added successfully.");
+            String encryptedPwd = encrypt(password);
+            vault.put(site, encryptedPwd);
+            System.out.println("Password saved successfully.");
         } catch (Exception e) {
+            System.err.println("Failed to encrypt and store the password.");
             e.printStackTrace();
         }
     }
 
-    public String getPassword(String site) {
+    public String fetchPassword(String site) {
         try {
-            String encryptedPassword = passwordStore.get(site);
-            return encryptedPassword != null ? decrypt(encryptedPassword) : "No password found for this site.";
+            String encryptedPwd = vault.get(site);
+            return encryptedPwd != null ? decrypt(encryptedPwd) : "No password stored for this service.";
         } catch (Exception e) {
+            System.err.println("Error while decrypting the password.");
             e.printStackTrace();
             return null;
         }
     }
 
-    private String encrypt(String data) throws Exception {
-        SecretKeySpec key = new SecretKeySpec(keyValue, ALGORITHM);
-        Cipher c = Cipher.getInstance(ALGORITHM);
-        c.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encVal = c.doFinal(data.getBytes());
-        return Base64.getEncoder().encodeToString(encVal);
+    private String encrypt(String plainText) throws Exception {
+        SecretKeySpec key = new SecretKeySpec(AES_KEY, CIPHER_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    private String decrypt(String encryptedData) throws Exception {
-        SecretKeySpec key = new SecretKeySpec(keyValue, ALGORITHM);
-        Cipher c = Cipher.getInstance(ALGORITHM);
-        c.init(Cipher.DECRYPT_MODE, key);
-        byte[] decodedValue = Base64.getDecoder().decode(encryptedData);
-        byte[] decValue = c.doFinal(decodedValue);
-        return new String(decValue);
+    private String decrypt(String encryptedText) throws Exception {
+        SecretKeySpec key = new SecretKeySpec(AES_KEY, CIPHER_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
+        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+        return new String(decryptedBytes);
     }
 }
