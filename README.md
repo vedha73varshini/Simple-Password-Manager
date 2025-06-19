@@ -29,7 +29,7 @@ cd PasswordManager
 ### 2. Compile the Java File
 ```bash 
 
-javac PasswordManager.java
+javac src/PasswordManager.java utils/Crypto.java
 ```
 
 ### 3. Run the Application
