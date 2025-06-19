@@ -25,7 +25,13 @@ git clone https://github.com/your-username/PasswordManager.git
 cd PasswordManager
 ```
 ### 2. Compile the Java File
+```bash 
+
 javac PasswordManager.java
+```
 
 ### 3. Run the Application
+```bash 
+
 java PasswordManager
+```
