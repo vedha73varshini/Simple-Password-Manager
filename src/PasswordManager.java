@@ -1,4 +1,4 @@
-import utils.CryptoUtils;
+import utils.Crypto;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
