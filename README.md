@@ -1,4 +1,6 @@
 # Simple Password Manager
+A Java-based console application to store and retrieve passwords securely using AES encryption.
+
 
 ---
 
