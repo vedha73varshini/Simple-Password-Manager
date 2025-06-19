@@ -21,7 +21,7 @@
 
 ### 1. Clone the Repository  
 ```bash 
-git clone https://github.com/your-username/PasswordManager.git
+git clone https://github.com/vedha73varshini/Simple-Password-Manager.git
 cd PasswordManager
 ```
 ### 2. Compile the Java File
